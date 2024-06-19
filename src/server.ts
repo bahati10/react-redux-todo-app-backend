@@ -5,6 +5,7 @@ import path from "path";
 import dotenv from "dotenv";
 import db from "./config/db.js";
 import { todoRouter } from "./routes/todo.routes.js";
+import { userRouter } from "./routes/user.routes.js";
 
 dotenv.config();
 
@@ -31,7 +32,7 @@ db.authenticate()
 
     const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-    app.use("/api", todoRouter);
+    app.use("/api", todoRouter, userRouter);
 
     app.get("/", (req, res) => {
       res.send("welcome to todo");
