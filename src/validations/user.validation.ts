@@ -23,11 +23,6 @@ const userCreationSchema = Joi.object({
     "string.empty": "Email is required.",
     "any.required": "Email is required.",
   }),
-  phone: Joi.string().required().pattern(new RegExp("^[0-9]{10}$")).messages({
-    "string.empty": "Phone number is required.",
-    "string.pattern.base": "Phone number must be a valid 10-digit number.",
-    "any.required": "Phone number is required.",
-  }),
   password: Joi.string()
     .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])"))
     .required()

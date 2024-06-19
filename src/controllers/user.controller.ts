@@ -29,7 +29,7 @@ class userController {
         password: hashedPassword,
       });
 
-      const token = generateToken(res, user.dataValues.id, email, firstname);
+      const token = generateToken(res, user.id, email, firstname);
 
       return res.status(201).json({
         message: "Signup was successfull",
@@ -78,6 +78,45 @@ class userController {
       return res.status(500).json({ error: error.message });
     }
   };
+
+  login = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const { email, password } = req.body;
+      const user = await UserService.getUserByEmail(email);
+      if (!user) {
+        return res.status(400).json({ message: "Invalid email or password" });
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "Invalid email or password" });
+      }
+
+      const token = generateToken(res, user.id, user.email, user.firstname);
+
+      return res.status(200).json({
+        message: "Login successful",
+        token,
+      });
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message });
+    }
+  };
+
+  async logout(req: Request, res: Response): Promise<void> {
+    try {
+      res.clearCookie("jwt", { path: "/" });
+      res.cookie("loggedOut", true, {
+        httpOnly: true,
+        path: "/",
+        maxAge: 60 * 1000,
+      });
+      res.status(200).json({ message: "Logout successful" });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+      console.log(error);
+    }
+  }
 }
 
 export const UserController = new userController();
