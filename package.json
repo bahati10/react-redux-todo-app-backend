@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "start": "nodemon dist/server.js",
     "devstart": "tsc & nodemon dist/server.js",
     "migrate": "sequelize-cli db:migrate --config=config/config.mjs",
     "undo:migrate": "sequelize-cli db:migrate:undo:all --config=config/config.mjs",
