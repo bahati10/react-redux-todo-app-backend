@@ -4,35 +4,44 @@ import cors from "cors";
 import path from "path";
 import dotenv from "dotenv";
 import db from "./config/db.js";
+import { todoRouter } from "./routes/todo.routes.js";
 
 dotenv.config();
 
 db.authenticate()
-  .then((res) => console.log("connected to database successfully"))
-  .catch((error) => console.log(error));
-
-const app = express();
-
-app.use(
-  cors({
-    origin: "*",
-    credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
+  .then(() => {
+    console.log("connected to database successfully");
+    return db.sync();
   })
-);
+  .then(() => {
+    console.log("Database synchronized");
 
-app.use(cookieParser());
-app.use(express.json());
+    const app = express();
 
-const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+    app.use(
+      cors({
+        origin: "*",
+        credentials: true,
+        allowedHeaders: ["Content-Type", "Authorization"],
+      })
+    );
 
-app.get("/", (req, res) => {
-  res.send("welcome to todo");
-});
+    app.use(cookieParser());
+    app.use(express.json());
 
-const __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, "public")));
+    const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-app.listen(port, () => {
-  console.log(`app is running on http://localhost:${port}`);
-});
+    app.use("/api", todoRouter);
+
+    app.get("/", (req, res) => {
+      res.send("welcome to todo");
+    });
+
+    const __dirname = path.resolve();
+    app.use(express.static(path.join(__dirname, "public")));
+
+    app.listen(port, () => {
+      console.log(`app is running on http://localhost:${port}`);
+    });
+  })
+  .catch((error) => console.log(error));
